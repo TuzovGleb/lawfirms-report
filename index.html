@@ -93,14 +93,13 @@ const params=new URLSearchParams(location.search);for(const id of ['v5reason','v
 <script>
 (()=>{'use strict';
 const research=M.research_v6;if(!research)return;
-stateLabel.outside_target='Вне целевого юридического рынка';
 const panel=document.createElement('section');panel.className='panel medium-v6';
 const bands=['11–20','6–10'],cohorts=Array.isArray(research.cohorts)?research.cohorts:[];
 panel.innerHTML='<h2>Проверка организаций среднего размера</h2><p>Проход выполняется последовательно: сначала выборка 11–20 человек, затем 6–10. Это группы по размеру в зафиксированной версии базы, а не единый текущий штат.</p><div class="segment-row">'+bands.map(band=>{const c=cohorts.find(x=>x.band===band),selected=D.filter(r=>!r.large&&r.size_group===band).length;return '<div class="segment-card"><b>'+esc(band)+' человек</b><p>В выборке: '+n(selected)+'. Проверено в этом проходе: '+n(c?.processed||0)+'.</p><small>Основание численности и период указаны отдельно в карточке каждой организации.</small></div>';}).join('')+'</div><p class="note">Новые сайты и общие контакты дополняют сведения. Связи с юрлицами, размеры, статусы и финансовые показатели сохраняют прежнюю область подтверждения.</p><label>Показать выборку <select id="v6segment"><option value="">Все организации</option><option value="11–20">11–20 человек, исходная для этого прохода</option><option value="6–10">6–10 человек, исходная для этого прохода</option></select></label>';
 document.querySelector('.filters').before(panel);
 const previous=apply;apply=function(){previous();const band=$('v6segment').value;if(band){selected=selected.filter(r=>!r.large&&r.size_group===band);page=0;render();}const params=new URLSearchParams(location.search);band?params.set('segment',band):params.delete('segment');try{history.replaceState(null,'',location.pathname+(params.size?'?'+params:''));}catch{}};
 $('v6segment').addEventListener('change',()=>apply());$('reset').addEventListener('click',()=>{$('v6segment').value='';apply();});
-const previousClick=$('rows').onclick;$('rows').onclick=e=>{previousClick?.(e);for(const b of $('cardbody').querySelectorAll('.field-list b'))if(b.textContent==='market_scope')b.textContent='Принадлежность к юридической базе';};
+const previousClick=$('rows').onclick;$('rows').onclick=e=>{previousClick?.(e);const id=e.target.closest('button[data-id]')?.dataset.id,r=D.find(x=>x.id===id);for(const b of $('cardbody').querySelectorAll('.field-list b'))if(b.textContent==='market_scope'){b.textContent='Принадлежность к юридической базе';if(r?.field_states?.market_scope==='outside_target'&&b.nextElementSibling)b.nextElementSibling.textContent='Вне целевого юридического рынка';}};
 const segment=new URLSearchParams(location.search).get('segment');if(bands.includes(segment))$('v6segment').value=segment;apply();
 })();
 </script>
